@@ -13,7 +13,7 @@ const { collections } = Astro.props;
     collections.map((c) => {
       const cover = c.cover;
       return (
-        <li data-reveal>
+        <li>
           <a href={`/collections/${c.slug}/`}>
             <div class="frame">
               <Picture

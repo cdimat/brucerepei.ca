@@ -69,10 +69,6 @@ const ogAlt = imageAlt ?? (image ? fullTitle : `${hero.title} by ${site.name}`);
     <meta name="twitter:image:alt" content={ogAlt} />
 
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
-
-    <script is:inline>
-      document.documentElement.classList.add('js');
-    </script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -84,7 +80,12 @@ const ogAlt = imageAlt ?? (image ? fullTitle : `${hero.title} by ${site.name}`);
 
     <script>
       const els = document.querySelectorAll<HTMLElement>('[data-reveal]');
-      if ('IntersectionObserver' in window) {
+      if ('IntersectionObserver' in window && els.length) {
+        // Anything already on screen stays visible (no flash); only content below the fold fades in.
+        els.forEach((el) => {
+          if (el.getBoundingClientRect().top < innerHeight) el.classList.add('is-visible');
+        });
+        document.documentElement.classList.add('reveal-ready');
         const io = new IntersectionObserver(
           (entries) => {
             for (const e of entries) {
@@ -96,9 +97,9 @@ const ogAlt = imageAlt ?? (image ? fullTitle : `${hero.title} by ${site.name}`);
           },
           { rootMargin: '0px 0px -8% 0px' },
         );
-        els.forEach((el) => io.observe(el));
-      } else {
-        els.forEach((el) => el.classList.add('is-visible'));
+        els.forEach((el) => {
+          if (!el.classList.contains('is-visible')) io.observe(el);
+        });
       }
     </script>
   </body>

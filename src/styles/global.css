@@ -12,7 +12,7 @@
   --paper: #fffefb;
   --ink: #1d1c1a;
   --ink-soft: #4a4740;
-  --muted: #7a756b;
+  --muted: #6e695f;
   --line: #e2ddd2;
   /* Bruce's favourite colour: a deep "British racing" green. */
   --green: #1e3a2b;
@@ -191,17 +191,16 @@ p {
   white-space: nowrap;
 }
 
-/* Fade-in on scroll (only when JS has marked the page ready). */
-.js [data-reveal] {
+/* Gentle fade-in on scroll for text and feature images (never gallery grids).
+   Only applies once the reveal script is running, so content can never get stuck hidden. */
+.reveal-ready [data-reveal]:not(.is-visible) {
   opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 0.9s var(--ease),
-    transform 0.9s var(--ease);
+  transform: translateY(12px);
 }
-.js [data-reveal].is-visible {
-  opacity: 1;
-  transform: none;
+.reveal-ready [data-reveal] {
+  transition:
+    opacity 0.7s var(--ease),
+    transform 0.7s var(--ease);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -215,7 +214,7 @@ p {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .js [data-reveal] {
+  .reveal-ready [data-reveal]:not(.is-visible) {
     opacity: 1;
     transform: none;
   }

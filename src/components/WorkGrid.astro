@@ -16,7 +16,7 @@ const { works, rowHeight = 220, eager = 0 } = Astro.props;
 <ul class="grid" style={`--row: ${rowHeight}px`}>
   {
     works.map((work, i) => (
-      <li class="item" style={`--r: ${ratio(work).toFixed(4)}`} data-reveal>
+      <li class="item" style={`--r: ${ratio(work).toFixed(4)}`}>
         <a href={`/work/${work.slug}/`}>
           <div class="frame">
             <Picture
