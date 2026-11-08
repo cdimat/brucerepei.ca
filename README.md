@@ -55,6 +55,21 @@ DNS can take from a few minutes to a few hours. Once GitHub sees it (repo **Sett
 3. Link to `https://brucerepei.ca` from Bruce's Fine Art America profile, social accounts and any gallery or class listings. Inbound links are the biggest ranking factor a small site controls.
 4. Consider a free [Google Business Profile](https://www.google.com/business/) for the Hamilton studio and classes, so he appears in local "Hamilton artist" / "painting classes Hamilton" searches.
 
+## Analytics
+
+Visitor stats are collected with [Umami](https://cloud.umami.is): no cookies, so no consent banner is needed. The website ID is in `src/config.ts` (`umamiWebsiteId`), and only visits on `brucerepei.ca` are counted (local testing is ignored).
+
+Besides page views, these clicks are recorded as events (see **Events** in the Umami dashboard):
+
+| Event                       | Details recorded                                      |
+| --------------------------- | ----------------------------------------------------- |
+| `Buy prints`                | `artwork`: which painting's Fine Art America page     |
+| `Inquire about original`    | `artwork`: which painting                             |
+| `Contact form`              | `outcome` (Sent / Failed / Opened email app / Not connected), `subject`, `artwork` |
+| `Fine Art America profile`  | `location`: where the link was clicked (home, footer, contact page) |
+
+To track another link or button, add `data-umami-event="Event name"` (and optionally `data-umami-event-<detail>="value"`) to it.
+
 ## Adding a painting
 
 1. Save the image as `src/assets/works/<slug>.jpg`, where the slug is lowercase with hyphens (e.g. `harbour-at-dusk.jpg`). Use a large, high-quality photo; the site generates every smaller size and modern format (AVIF/WebP) automatically.

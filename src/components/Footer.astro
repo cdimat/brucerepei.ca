@@ -18,7 +18,13 @@ const year = new Date().getFullYear();
       <p class="label">Prints</p>
       <p class="muted">
         Prints, canvases and more are available through{' '}
-        <a href={site.faaProfile} target="_blank" rel="noopener">Fine Art America</a>.
+        <a
+          href={site.faaProfile}
+          target="_blank"
+          rel="noopener"
+          data-umami-event="Fine Art America profile"
+          data-umami-event-location="Footer">Fine Art America</a
+        >.
       </p>
       {site.email && <p><a href={`mailto:${site.email}`}>{site.email}</a></p>}
     </div>

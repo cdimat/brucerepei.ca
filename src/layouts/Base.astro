@@ -69,6 +69,18 @@ const ogAlt = imageAlt ?? (image ? fullTitle : `${hero.title} by ${site.name}`);
     <meta name="twitter:image:alt" content={ogAlt} />
 
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    {
+      site.umamiWebsiteId && (
+        <script
+          is:inline
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id={site.umamiWebsiteId}
+          data-domains={site.analyticsDomain}
+        />
+      )
+    }
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

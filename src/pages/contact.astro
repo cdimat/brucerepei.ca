@@ -84,7 +84,13 @@ const jsonLd = graph(
         <p class="eyebrow">Prints</p>
         <p>
           Prints, canvases and framed reproductions of every painting can be ordered through{' '}
-          <a href={site.faaProfile} target="_blank" rel="noopener">Fine Art America</a>.
+          <a
+            href={site.faaProfile}
+            target="_blank"
+            rel="noopener"
+            data-umami-event="Fine Art America profile"
+            data-umami-event-location="Contact page">Fine Art America</a
+          >.
         </p>
       </div>
     </aside>
@@ -112,14 +118,22 @@ const jsonLd = graph(
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const data = new FormData(form);
+      const track = (outcome: string) =>
+        window.umami?.track('Contact form', {
+          outcome,
+          subject: String(data.get('subject') ?? ''),
+          artwork: String(data.get('artwork') ?? ''),
+        });
 
       // No form service connected yet: hand the message to the visitor's email app instead.
       if (!endpoint) {
         if (email) {
           const subject = data.get('artwork') ? `Inquiry: ${data.get('artwork')}` : String(data.get('subject'));
           const body = `${data.get('message')}\n\n${data.get('name')}\n${data.get('email')}`;
+          track('Opened email app');
           location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         } else {
+          track('Not connected');
           status.textContent = 'The contact form is not connected yet (set formEndpoint or email in src/config.ts).';
         }
         return;
@@ -137,8 +151,10 @@ const jsonLd = graph(
         if (!res.ok) throw new Error(String(res.status));
         form.reset();
         form.querySelector<HTMLLabelElement>('.artwork-field')!.hidden = true;
+        track('Sent');
         status.textContent = 'Thank you. Your message has been sent.';
       } catch {
+        track('Failed');
         status.textContent = email
           ? `Sorry, something went wrong. Please try again, or email ${email}.`
           : 'Sorry, something went wrong. Please try again in a moment.';

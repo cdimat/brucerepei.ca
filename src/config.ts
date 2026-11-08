@@ -19,6 +19,10 @@ export const site = {
 
   faaProfile: 'https://fineartamerica.com/profiles/bruce-repei',
 
+  // Umami analytics (https://cloud.umami.is). Only visits on this domain are counted.
+  umamiWebsiteId: '46b4cb94-2b6a-4c0a-9f65-28ea46e0f63e',
+  analyticsDomain: 'brucerepei.ca',
+
   // Artwork slugs (file names in src/assets/works, without .jpg).
   heroWork: 'niagara-vineyards-fall',
   selectedWorks: [
