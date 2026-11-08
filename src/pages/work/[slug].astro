@@ -1,0 +1,317 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Picture, getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import WorkGrid from '../../components/WorkGrid.astro';
+import { site } from '../../config';
+import { allWorks, altFor, getCollection, type Work } from '../../lib/works';
+import { abs, breadcrumbs, graph, PERSON_ID } from '../../lib/seo';
+
+export const getStaticPaths = (() =>
+  allWorks.map((work, i) => ({
+    params: { slug: work.slug },
+    props: {
+      work,
+      prev: allWorks[(i - 1 + allWorks.length) % allWorks.length],
+      next: allWorks[(i + 1) % allWorks.length],
+    },
+  }))) satisfies GetStaticPaths;
+
+const { work, prev, next } = Astro.props as { work: Work; prev: Work; next: Work };
+
+const workCollections = work.collections.map((slug) => getCollection(slug)!).filter(Boolean);
+const primary = workCollections[0];
+const related = primary
+  ? primary.works.filter((w) => w.slug !== work.slug).slice(0, 4)
+  : allWorks.filter((w) => w.slug !== work.slug && w.collections.length === 0).slice(0, 4);
+
+const path = `/work/${work.slug}/`;
+const mediumLower = work.medium ? work.medium.toLowerCase() : '';
+const summary = `${work.title} is an original ${mediumLower ? `${mediumLower} ` : ''}painting by Canadian artist ${site.name}.`;
+const description = work.description ? `${summary} ${work.description}` : `${summary} Prints available; inquire about the original.`;
+const titleCase = (s: string) =>
+  s.replace(/\b\w+/g, (w) => (['on', 'with', 'and'].includes(w) ? w : w[0].toUpperCase() + w.slice(1)));
+const pageTitle = work.medium ? `${work.title} | ${titleCase(work.medium)} Painting` : `${work.title} | Painting`;
+const ogImage = await getImage({ src: work.image, width: work.image.width, format: 'jpg', quality: 85 });
+
+const [, medium, surface] = work.medium.match(/^(.*?) on (.*)$/) ?? [];
+const jsonLd = graph(
+  {
+    '@type': 'VisualArtwork',
+    '@id': abs(`${path}#artwork`),
+    name: work.title,
+    artform: 'Painting',
+    ...(work.medium && { artMedium: medium ?? work.medium }),
+    ...(surface && { artworkSurface: surface }),
+    ...(work.year && { dateCreated: String(work.year) }),
+    ...(work.description && { description: work.description }),
+    image: {
+      '@type': 'ImageObject',
+      url: new URL(ogImage.src, Astro.site).href,
+      width: ogImage.attributes.width,
+      height: ogImage.attributes.height,
+      caption: altFor(work),
+      creator: { '@id': PERSON_ID },
+      creditText: site.name,
+      copyrightNotice: `© ${site.name}`,
+    },
+    url: abs(path),
+    creator: { '@type': 'Person', '@id': PERSON_ID, name: site.name },
+    ...(workCollections.length && {
+      isPartOf: workCollections.map((c) => ({ '@type': 'CollectionPage', name: c.name, url: abs(`/collections/${c.slug}/`) })),
+    }),
+    ...(work.faaUrl && { sameAs: work.faaUrl }),
+  },
+  breadcrumbs(
+    primary
+      ? [
+          { name: 'Collections', path: '/collections/' },
+          { name: primary.name, path: `/collections/${primary.slug}/` },
+          { name: work.title, path },
+        ]
+      : [
+          { name: 'Work', path: '/work/' },
+          { name: work.title, path },
+        ],
+  ),
+);
+---
+
+<Base title={pageTitle} description={description} image={work.image} imageAlt={altFor(work)} ogType="article" jsonLd={jsonLd}>
+  <article class="wrap artwork">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/work/">Work</a>
+      {
+        primary && (
+          <>
+            <span aria-hidden="true">/</span>
+            <a href={`/collections/${primary.slug}/`}>{primary.name}</a>
+          </>
+        )
+      }
+    </nav>
+
+    <div class="layout">
+      <figure class="stage">
+        <Picture
+          src={work.image}
+          alt={altFor(work)}
+          widths={[480, 720, 900]}
+          sizes="(max-width: 900px) 100vw, 62vw"
+          formats={['avif', 'webp']}
+          loading="eager"
+          fetchpriority="high"
+          style={`view-transition-name: work-${work.slug}`}
+        />
+      </figure>
+
+      <div class="info">
+        <h1>{work.title}</h1>
+        <dl class="facts">
+          <div><dt>Artist</dt><dd>{site.name}</dd></div>
+          {work.medium && <div><dt>Medium</dt><dd>{work.medium}</dd></div>}
+          {work.year && <div><dt>Year</dt><dd>{work.year}</dd></div>}
+          {
+            workCollections.length > 0 && (
+              <div>
+                <dt>{workCollections.length > 1 ? 'Collections' : 'Collection'}</dt>
+                <dd>
+                  {workCollections.map((c, i) => (
+                    <>
+                      <a href={`/collections/${c.slug}/`}>{c.name}</a>
+                      {i < workCollections.length - 1 && ', '}
+                    </>
+                  ))}
+                </dd>
+              </div>
+            )
+          }
+        </dl>
+
+        {work.description && <p class="description">{work.description}</p>}
+
+        <div class="ctas">
+          <a class="btn" href={`/contact/?work=${work.slug}`}>Inquire about the original</a>
+          {
+            work.faaUrl && (
+              <a class="btn btn--ghost" href={work.faaUrl} target="_blank" rel="noopener">
+                Buy prints
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M5 11 11 5M6 5h5v5" stroke="currentColor" stroke-width="1.4" />
+                </svg>
+              </a>
+            )
+          }
+        </div>
+        {
+          work.faaUrl && (
+            <p class="note">Prints, canvas, framed and metal reproductions are available through Fine Art America.</p>
+          )
+        }
+
+        <nav class="pager" aria-label="More works">
+          <a href={`/work/${prev.slug}/`} rel="prev" data-key="ArrowLeft">
+            <span class="dir">&larr; Previous</span>
+            <span class="t">{prev.title}</span>
+          </a>
+          <a href={`/work/${next.slug}/`} rel="next" data-key="ArrowRight">
+            <span class="dir">Next &rarr;</span>
+            <span class="t">{next.title}</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+  </article>
+
+  {
+    related.length > 0 && (
+      <section class="section wrap">
+        <div class="section-head">
+          <h2>{primary ? `More from ${primary.name}` : 'More works'}</h2>
+          {primary && <a class="link-arrow" href={`/collections/${primary.slug}/`}>View collection &rarr;</a>}
+        </div>
+        <WorkGrid works={related} rowHeight={180} />
+      </section>
+    )
+  }
+</Base>
+
+<script>
+  document.addEventListener('keydown', (e) => {
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('input, textarea, select, [contenteditable]')) return;
+    const link = document.querySelector<HTMLAnchorElement>(`.pager a[data-key="${e.key}"]`);
+    if (link) link.click();
+  });
+</script>
+
+<style>
+  .artwork {
+    padding-top: clamp(1.25rem, 3vw, 2rem);
+  }
+  .crumbs {
+    display: flex;
+    gap: 0.6rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  }
+  .crumbs a {
+    text-decoration: none;
+  }
+  .crumbs a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(280px, 1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+  }
+  .stage {
+    margin: 0;
+    padding: clamp(1rem, 4vw, 3.5rem);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+  }
+  .stage :global(img) {
+    width: auto;
+    max-height: min(74vh, 900px);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.08),
+      0 18px 40px -20px rgb(30 25 15 / 0.4);
+  }
+  .info {
+    position: sticky;
+    top: 6.5rem;
+  }
+  h1 {
+    font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+    margin-bottom: 1.75rem;
+  }
+  .facts {
+    margin: 0 0 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+  .facts div {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.9rem;
+  }
+  .facts dt {
+    color: var(--muted);
+  }
+  .facts dd {
+    margin: 0;
+  }
+  .description {
+    color: var(--ink-soft);
+    margin-bottom: 2rem;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .note {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    text-decoration: none;
+    min-width: 0;
+  }
+  .pager a[rel='next'] {
+    text-align: right;
+  }
+  .pager .dir {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .pager .t {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+  .pager a:hover .t {
+    color: var(--accent);
+  }
+
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+    .info {
+      position: static;
+    }
+    .stage {
+      margin-inline: calc(var(--gutter) * -1);
+      border-inline: 0;
+    }
+    .stage :global(img) {
+      width: 100%;
+      max-height: none;
+    }
+  }
+</style>

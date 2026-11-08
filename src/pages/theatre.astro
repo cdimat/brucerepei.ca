@@ -1,0 +1,209 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageIntro from '../components/PageIntro.astro';
+import { altFor, getWork } from '../lib/works';
+import { breadcrumbs, graph } from '../lib/seo';
+
+const jsonLd = graph(breadcrumbs([{ name: 'Theatre', path: '/theatre/' }]));
+
+const openingNight = getWork('opening-night');
+const musicBox = getWork('the-music-box');
+
+const productions = [
+  { title: 'The Lion King', where: 'Toronto and Los Angeles productions' },
+  { title: 'Mamma Mia!', where: 'Toronto and US productions' },
+  { title: 'The Lord of the Rings', where: 'Toronto and London' },
+];
+
+const design = ['Regional theatre', 'Princess Cruises', 'Paramount Theme Parks'];
+---
+
+<Base
+  title="Theatre Career & Scenic Art"
+  description="Before the studio, Bruce Repei spent thirty years as a Head Scenic Artist and Designer, with thirty Head Scenic credits on Broadway and on The Lion King, Mamma Mia! and The Lord of the Rings."
+  jsonLd={jsonLd}
+>
+  <PageIntro eyebrow="Scenic art & design" title="Thirty years in the theatre">
+    <p>
+      For three decades Bruce worked commercially in professional theatre as a Head Scenic Artist and Designer,
+      heading scenic art departments in regional theatres and in large commercial scenic companies.
+    </p>
+  </PageIntro>
+
+  <section class="wrap stats" aria-label="Career highlights">
+    <div data-reveal><span class="num">30</span><span class="lbl">years as a Head Scenic Artist &amp; Designer</span></div>
+    <div data-reveal><span class="num">30</span><span class="lbl">Head Scenic credits on Broadway</span></div>
+    <div data-reveal><span class="num">MFA</span><span class="lbl">Theatre Design, University of Calgary</span></div>
+  </section>
+
+  <section class="section wrap credits">
+    <div>
+      <p class="eyebrow">Head Scenic credits include</p>
+      <ul class="productions">
+        {
+          productions.map((p) => (
+            <li data-reveal>
+              <span class="show">{p.title}</span>
+              <span class="where">{p.where}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div>
+      <p class="eyebrow">Design &amp; art direction</p>
+      <ul class="design">
+        {design.map((d) => <li data-reveal>{d}</li>)}
+      </ul>
+      <p class="eyebrow teach-label">Teaching</p>
+      <p class="muted">Painting and stagecraft at the college level.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap band-grid">
+      <a href={`/work/${openingNight.slug}/`} class="art" data-reveal>
+        <Picture src={openingNight.image} alt={altFor(openingNight)} widths={[480, 720, 900]} sizes="(max-width: 900px) 100vw, 50vw" formats={['avif', 'webp']} />
+      </a>
+      <div data-reveal>
+        <p class="eyebrow">From stage to canvas</p>
+        <h2><em>{openingNight.title}</em></h2>
+        <p>{openingNight.description}</p>
+        <a class="link-arrow" href={`/work/${openingNight.slug}/`}>View the painting &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap band-grid reverse">
+    <a href={`/work/${musicBox.slug}/`} class="art" data-reveal>
+      <Picture src={musicBox.image} alt={altFor(musicBox)} widths={[480, 720, 900]} sizes="(max-width: 900px) 100vw, 50vw" formats={['avif', 'webp']} />
+    </a>
+    <div data-reveal>
+      <h2><em>{musicBox.title}</em></h2>
+      <p class="muted">{musicBox.description}</p>
+      <a class="link-arrow" href={`/work/${musicBox.slug}/`}>View the painting &rarr;</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-block: 1px solid var(--line);
+    margin-top: 1.5rem;
+  }
+  .stats div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 2rem 1.5rem 2rem 0;
+  }
+  .stats div + div {
+    border-left: 1px solid var(--line);
+    padding-left: 1.5rem;
+  }
+  .num {
+    font-family: var(--serif);
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 0.9;
+    color: var(--green);
+  }
+  .lbl {
+    font-size: 0.875rem;
+    color: var(--ink-soft);
+    max-width: 16em;
+  }
+  .credits {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 3rem clamp(2rem, 6vw, 6rem);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  li {
+    border-bottom: 1px solid var(--line);
+    padding: 1.1rem 0;
+  }
+  .productions li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1.5rem;
+  }
+  .show {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    line-height: 1.1;
+  }
+  .where {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .design li {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    line-height: 1.3;
+  }
+  .teach-label {
+    margin-top: 2.5rem;
+  }
+  .muted {
+    color: var(--ink-soft);
+  }
+
+  .band {
+    background: var(--green);
+    color: var(--green-ink);
+    padding-block: clamp(4rem, 9vw, 7rem);
+  }
+  .band .eyebrow {
+    color: color-mix(in srgb, var(--green-ink) 65%, transparent);
+  }
+  .band p {
+    color: color-mix(in srgb, var(--green-ink) 85%, transparent);
+  }
+  .band-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: center;
+  }
+  .band-grid h2 {
+    margin-bottom: 1.25rem;
+  }
+  .reverse .art {
+    order: 2;
+  }
+  .art :global(img) {
+    width: 100%;
+    box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.45);
+  }
+
+  @media (max-width: 900px) {
+    .credits,
+    .band-grid {
+      grid-template-columns: 1fr;
+    }
+    .reverse .art {
+      order: 0;
+    }
+  }
+  @media (max-width: 640px) {
+    .stats {
+      grid-template-columns: 1fr;
+    }
+    .stats div + div {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+      padding-left: 0;
+    }
+  }
+</style>

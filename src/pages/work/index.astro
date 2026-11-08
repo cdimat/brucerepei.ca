@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import CollectionNav from '../../components/CollectionNav.astro';
+import WorkGrid from '../../components/WorkGrid.astro';
+import { allWorks } from '../../lib/works';
+import { abs, breadcrumbs, graph, PERSON_ID } from '../../lib/seo';
+
+const jsonLd = graph(
+  {
+    '@type': 'CollectionPage',
+    name: 'Paintings by Bruce Repei',
+    url: abs('/work/'),
+    about: { '@id': PERSON_ID },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: allWorks.length,
+      itemListElement: allWorks.map((w, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: w.title,
+        url: abs(`/work/${w.slug}/`),
+      })),
+    },
+  },
+  breadcrumbs([{ name: 'Work', path: '/work/' }]),
+);
+---
+
+<Base
+  title="Paintings in Oil, Acrylic & Watercolour"
+  description={`Browse ${allWorks.length} original paintings by Canadian artist Bruce Repei: landscapes, seascapes and abstracts in oil, acrylic and watercolour. Prints available.`}
+  jsonLd={jsonLd}
+>
+  <PageIntro eyebrow={`${allWorks.length} works`} title="Paintings">
+    <p>Paintings in oil, acrylic and watercolour. Select any work for details, prints and inquiries.</p>
+  </PageIntro>
+  <div class="wrap">
+    <CollectionNav current="all" />
+    <WorkGrid works={allWorks} eager={6} />
+  </div>
+</Base>

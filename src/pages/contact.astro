@@ -1,0 +1,241 @@
+---
+import Base from '../layouts/Base.astro';
+import PageIntro from '../components/PageIntro.astro';
+import { site } from '../config';
+import { allWorks } from '../lib/works';
+import { abs, breadcrumbs, graph, PERSON_ID } from '../lib/seo';
+
+const titles = Object.fromEntries(allWorks.map((w) => [w.slug, w.title]));
+const jsonLd = graph(
+  { '@type': 'ContactPage', url: abs('/contact/'), name: `Contact ${site.name}`, about: { '@id': PERSON_ID } },
+  breadcrumbs([{ name: 'Contact', path: '/contact/' }]),
+);
+---
+
+<Base
+  title="Contact"
+  description="Contact Hamilton, Ontario artist Bruce Repei about original paintings, commissions, prints, and painting classes and workshops."
+  jsonLd={jsonLd}
+>
+  <PageIntro eyebrow="Contact" title="Get in touch">
+    <p>
+      For questions about original paintings, commissions or painting classes and workshops, send a note below.
+      Bruce will reply personally.
+    </p>
+  </PageIntro>
+
+  <section class="wrap layout">
+    <form
+      class="form"
+      method="POST"
+      action={site.formEndpoint || undefined}
+      data-endpoint={site.formEndpoint}
+      data-email={site.email}
+      data-titles={JSON.stringify(titles)}
+    >
+      <div class="row">
+        <label>
+          <span>Name</span>
+          <input name="name" autocomplete="name" required />
+        </label>
+        <label>
+          <span>Email</span>
+          <input name="email" type="email" autocomplete="email" required />
+        </label>
+      </div>
+      <label>
+        <span>Subject</span>
+        <select name="subject" id="subject">
+          <option>Original artwork inquiry</option>
+          <option>Commission</option>
+          <option>Painting classes &amp; workshops</option>
+          <option>Prints</option>
+          <option>Something else</option>
+        </select>
+      </label>
+      <label class="artwork-field" hidden>
+        <span>Artwork</span>
+        <input name="artwork" id="artwork" readonly />
+      </label>
+      <label>
+        <span>Message</span>
+        <textarea name="message" rows="7" required />
+      </label>
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="visually-hidden" aria-hidden="true" />
+      <div>
+        <button class="btn" type="submit">Send message</button>
+      </div>
+      <p class="status" role="status" aria-live="polite" />
+    </form>
+
+    <aside class="aside">
+      <div>
+        <p class="eyebrow">Studio</p>
+        <p>James Street North<br />Hamilton, Ontario, Canada</p>
+      </div>
+      {
+        site.email && (
+          <div>
+            <p class="eyebrow">Email</p>
+            <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+          </div>
+        )
+      }
+      <div>
+        <p class="eyebrow">Prints</p>
+        <p>
+          Prints, canvases and framed reproductions of every painting can be ordered through{' '}
+          <a href={site.faaProfile} target="_blank" rel="noopener">Fine Art America</a>.
+        </p>
+      </div>
+    </aside>
+  </section>
+</Base>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('work');
+
+  const form = document.querySelector<HTMLFormElement>('form.form');
+  if (form) {
+    const titles: Record<string, string> = JSON.parse(form.dataset.titles || '{}');
+    const title = slug ? titles[slug] : undefined;
+    if (title) {
+      const field = form.querySelector<HTMLLabelElement>('.artwork-field')!;
+      field.hidden = false;
+      form.querySelector<HTMLInputElement>('#artwork')!.value = title;
+      const msg = form.querySelector<HTMLTextAreaElement>('textarea')!;
+      if (!msg.value) msg.value = `Hello Bruce,\n\nI'm interested in "${title}". Is the original available?\n\n`;
+    }
+
+    const status = form.querySelector<HTMLParagraphElement>('.status')!;
+    const { endpoint, email } = form.dataset;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+
+      // No form service connected yet: hand the message to the visitor's email app instead.
+      if (!endpoint) {
+        if (email) {
+          const subject = data.get('artwork') ? `Inquiry: ${data.get('artwork')}` : String(data.get('subject'));
+          const body = `${data.get('message')}\n\n${data.get('name')}\n${data.get('email')}`;
+          location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        } else {
+          status.textContent = 'The contact form is not connected yet (set formEndpoint or email in src/config.ts).';
+        }
+        return;
+      }
+
+      const button = form.querySelector('button')!;
+      button.disabled = true;
+      status.textContent = 'Sending…';
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          body: data,
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        form.querySelector<HTMLLabelElement>('.artwork-field')!.hidden = true;
+        status.textContent = 'Thank you. Your message has been sent.';
+      } catch {
+        status.textContent = email
+          ? `Sorry, something went wrong. Please try again, or email ${email}.`
+          : 'Sorry, something went wrong. Please try again in a moment.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 3rem clamp(2rem, 6vw, 6rem);
+    align-items: start;
+    padding-top: 1rem;
+  }
+  .form {
+    display: grid;
+    gap: 1.25rem;
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+  label {
+    display: grid;
+    gap: 0.4rem;
+  }
+  label[hidden] {
+    display: none;
+  }
+  label span {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.8rem 0.9rem;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--wall);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition:
+      border-color 0.2s,
+      background 0.2s;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--ink);
+    background: var(--paper);
+  }
+  input[readonly] {
+    color: var(--ink-soft);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 9rem;
+  }
+  .status {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--accent);
+    min-height: 1.5em;
+  }
+  .aside {
+    display: grid;
+    gap: 2rem;
+  }
+  .aside p {
+    color: var(--ink-soft);
+  }
+  .aside .eyebrow {
+    margin-bottom: 0.5rem;
+  }
+  @media (max-width: 860px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

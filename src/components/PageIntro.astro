@@ -1,0 +1,38 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+}
+const { eyebrow, title } = Astro.props;
+---
+
+<header class="intro wrap">
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <h1>{title}</h1>
+  {
+    Astro.slots.has('default') && (
+      <div class="lede">
+        <slot />
+      </div>
+    )
+  }
+</header>
+
+<style>
+  .intro {
+    padding-block: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 3vw, 2.5rem);
+    animation: rise 0.9s var(--ease) both;
+  }
+  h1 {
+    margin-bottom: 1.25rem;
+  }
+  .lede :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+</style>

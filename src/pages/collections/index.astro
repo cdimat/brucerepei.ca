@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import CollectionCards from '../../components/CollectionCards.astro';
+import { collections } from '../../lib/works';
+import { abs, breadcrumbs, graph } from '../../lib/seo';
+
+const jsonLd = graph(
+  {
+    '@type': 'CollectionPage',
+    name: 'Collections of paintings by Bruce Repei',
+    url: abs('/collections/'),
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: collections.map((c, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: c.name,
+        url: abs(`/collections/${c.slug}/`),
+      })),
+    },
+  },
+  breadcrumbs([{ name: 'Collections', path: '/collections/' }]),
+);
+---
+
+<Base
+  title="Painting Collections"
+  description="Collections of paintings by Canadian artist Bruce Repei, from the AT THE EDGE series to Niagara vineyards, Bermuda, Ship Island and the Rockies."
+  jsonLd={jsonLd}
+>
+  <PageIntro eyebrow={`${collections.length} collections`} title="Collections">
+    <p>Series, places and mediums that Bruce has returned to over the years.</p>
+  </PageIntro>
+  <div class="wrap">
+    <CollectionCards collections={collections} />
+  </div>
+</Base>

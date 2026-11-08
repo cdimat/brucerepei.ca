@@ -1,0 +1,224 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import WorkGrid from '../components/WorkGrid.astro';
+import CollectionCards from '../components/CollectionCards.astro';
+import { site } from '../config';
+import { allWorks, altFor, collections, getWork } from '../lib/works';
+import { graph, personSchema, websiteSchema } from '../lib/seo';
+
+const hero = getWork(site.heroWork);
+const selected = site.selectedWorks.map(getWork);
+const openingNight = getWork('opening-night');
+---
+
+<Base jsonLd={graph(websiteSchema, personSchema)}>
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <p class="eyebrow">Painter &middot; Hamilton, Ontario</p>
+      <h1>Bruce Repei</h1>
+      <p class="lede">
+        Landscapes, seascapes and abstractions in oil, acrylic and watercolour, painted by a former head
+        scenic artist for Broadway and international stages.
+      </p>
+      <div class="actions">
+        <a class="btn" href="/work/">
+          View the work
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.4" /></svg>
+        </a>
+        <a class="btn btn--ghost" href="/about/">About the artist</a>
+      </div>
+    </div>
+
+    <a class="hero-art" href={`/work/${hero.slug}/`}>
+      <Picture
+        src={hero.image}
+        alt={altFor(hero)}
+        widths={[480, 720, 900]}
+        sizes="(max-width: 900px) 100vw, 55vw"
+        formats={['avif', 'webp']}
+        loading="eager"
+        fetchpriority="high"
+      />
+      <span class="hero-caption"><em>{hero.title}</em>{hero.medium && `, ${hero.medium.toLowerCase()}`}</span>
+    </a>
+  </section>
+
+  <section class="section wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Selected works</p>
+        <h2>From the studio</h2>
+      </div>
+      <a class="link-arrow" href="/work/">All {allWorks.length} works &rarr;</a>
+    </div>
+    <WorkGrid works={selected} rowHeight={230} />
+  </section>
+
+  <section class="section collections-band">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Collections</p>
+          <h2>Bodies of work</h2>
+        </div>
+        <a class="link-arrow" href="/collections/">All collections &rarr;</a>
+      </div>
+      <CollectionCards collections={collections.slice(0, 6)} />
+    </div>
+  </section>
+
+  <section class="theatre">
+    <div class="wrap theatre-grid">
+      <div class="theatre-copy" data-reveal>
+        <p class="eyebrow">A life in the theatre</p>
+        <h2>Thirty years painting for the stage</h2>
+        <p>
+          Before the studio, Bruce spent three decades as a Head Scenic Artist and Designer, leading scenic
+          art departments for regional theatres and major commercial scenic companies, on productions
+          including <em>The Lion King</em>, <em>Mamma Mia!</em> and <em>The Lord of the Rings</em>.
+        </p>
+        <a class="btn btn--light" href="/theatre/">The theatre years</a>
+      </div>
+      <a class="theatre-art" href={`/work/${openingNight.slug}/`} data-reveal>
+        <Picture
+          src={openingNight.image}
+          alt={`${openingNight.title}, oil painting of the Princess of Wales Theatre in Toronto by Bruce Repei`}
+          widths={[480, 720, 900]}
+          sizes="(max-width: 900px) 100vw, 45vw"
+          formats={['avif', 'webp']}
+          loading="lazy"
+        />
+        <span class="hero-caption"><em>{openingNight.title}</em>, {openingNight.medium.toLowerCase()}</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section wrap studio">
+    <div data-reveal>
+      <p class="eyebrow">The studio</p>
+      <h2>James Street North, Hamilton</h2>
+    </div>
+    <div data-reveal>
+      <p class="lede">
+        Bruce paints in various mediums from his studio on James Street North, where he also teaches painting
+        classes and workshops. Inquiries about original works, commissions and classes are always welcome.
+      </p>
+      <div class="actions">
+        <a class="btn" href="/contact/">Get in touch</a>
+        <a class="btn btn--ghost" href={site.faaProfile} target="_blank" rel="noopener">Shop prints</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+    padding-block: clamp(2.5rem, 7vw, 6rem) clamp(3rem, 6vw, 5rem);
+  }
+  .hero h1 {
+    margin-bottom: 1.5rem;
+  }
+  .hero-copy {
+    animation: rise 1s var(--ease) both;
+  }
+  .hero-art {
+    display: block;
+    text-decoration: none;
+    animation: rise 1.2s 0.1s var(--ease) both;
+  }
+  .hero-art :global(img),
+  .theatre-art :global(img) {
+    width: 100%;
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.06),
+      0 24px 50px -24px rgb(30 25 15 / 0.35);
+  }
+  .hero-caption {
+    display: block;
+    margin-top: 0.9rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .hero-caption em {
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+
+  .collections-band {
+    background: var(--paper);
+    border-block: 1px solid var(--line);
+  }
+
+  .theatre {
+    background: var(--green);
+    color: var(--green-ink);
+    padding-block: clamp(4rem, 9vw, 8rem);
+  }
+  .theatre .eyebrow,
+  .theatre .hero-caption {
+    color: color-mix(in srgb, var(--green-ink) 65%, transparent);
+  }
+  .theatre .hero-caption em {
+    color: var(--green-ink);
+  }
+  .theatre-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: center;
+  }
+  .theatre h2 {
+    margin-bottom: 1.5rem;
+  }
+  .theatre p {
+    color: color-mix(in srgb, var(--green-ink) 85%, transparent);
+    max-width: 34em;
+  }
+  .theatre-art {
+    display: block;
+    text-decoration: none;
+  }
+  .btn--light {
+    margin-top: 1rem;
+    background: var(--green-ink);
+    color: var(--green);
+    border-color: var(--green-ink);
+  }
+  .btn--light:hover {
+    background: transparent;
+    color: var(--green-ink);
+    border-color: var(--green-ink);
+  }
+
+  .studio {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 2rem clamp(2rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .hero,
+    .theatre-grid,
+    .studio {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

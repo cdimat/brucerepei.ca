@@ -1,0 +1,71 @@
+---
+import { collections } from '../lib/works';
+
+interface Props {
+  /** Collection slug, or 'all'. */
+  current: string;
+}
+const { current } = Astro.props;
+const items = [{ href: '/work/', label: 'All works', slug: 'all' }].concat(
+  collections.map((c) => ({ href: `/collections/${c.slug}/`, label: c.name, slug: c.slug })),
+);
+---
+
+<nav class="chips" aria-label="Browse by collection">
+  <ul>
+    {
+      items.map((i) => (
+        <li>
+          <a href={i.href} aria-current={i.slug === current ? 'page' : undefined}>
+            {i.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .chips {
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+    margin-inline: calc(var(--gutter) * -1);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
+  }
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+  ul {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem var(--gutter);
+    width: max-content;
+  }
+  a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ink-soft);
+    white-space: nowrap;
+    transition:
+      border-color 0.2s,
+      background 0.2s,
+      color 0.2s;
+  }
+  a:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+  a[aria-current='page'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+</style>

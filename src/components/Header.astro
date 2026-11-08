@@ -1,0 +1,209 @@
+---
+import { nav, site } from '../config';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href);
+---
+
+<header class="header">
+  <div class="wrap bar">
+    <a href="/" class="brand" aria-label={`${site.name}, home`}>
+      {site.name}
+    </a>
+
+    <nav aria-label="Primary" class="nav-desktop">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <button class="menu-btn" popovertarget="mobile-menu" aria-label="Open menu">
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <div id="mobile-menu" popover class="mobile-menu">
+    <div class="mobile-top">
+      <span class="brand">{site.name}</span>
+      <button popovertarget="mobile-menu" popovertargetaction="hide" class="close" aria-label="Close menu">
+        Close
+      </button>
+    </div>
+    <nav aria-label="Mobile">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <p class="mobile-foot">{site.location}</p>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--wall) 86%, transparent);
+    backdrop-filter: saturate(1.4) blur(12px);
+    -webkit-backdrop-filter: saturate(1.4) blur(12px);
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+    view-transition-name: site-header;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4.5rem;
+  }
+  .brand {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    line-height: 1;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .nav-desktop ul {
+    display: flex;
+    gap: clamp(1.25rem, 2.5vw, 2.25rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-desktop a {
+    position: relative;
+    font-size: 0.875rem;
+    font-weight: 450;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding-block: 0.4rem;
+    transition: color 0.2s;
+  }
+  .nav-desktop a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--ease);
+  }
+  .nav-desktop a:hover,
+  .nav-desktop a[aria-current='page'] {
+    color: var(--ink);
+  }
+  .nav-desktop a:hover::after,
+  .nav-desktop a[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  .menu-btn {
+    display: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-right: -0.6rem;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+  }
+  .menu-btn span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--ink);
+  }
+
+  .mobile-menu {
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0 var(--gutter) 2rem;
+    border: 0;
+    background: var(--wall);
+    color: var(--ink);
+    flex-direction: column;
+  }
+  .mobile-menu:popover-open {
+    display: flex;
+    animation: menu-in 0.35s var(--ease);
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+  .mobile-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 4.5rem;
+  }
+  .close {
+    border: 0;
+    background: none;
+    font: 500 0.875rem var(--sans);
+    color: var(--ink);
+    cursor: pointer;
+    padding: 0.75rem 0;
+  }
+  .mobile-menu ul {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+  }
+  .mobile-menu li {
+    border-bottom: 1px solid var(--line);
+  }
+  .mobile-menu li a {
+    display: block;
+    padding: 0.9rem 0;
+    font-family: var(--serif);
+    font-size: 2.25rem;
+    line-height: 1.1;
+    text-decoration: none;
+  }
+  .mobile-menu a[aria-current='page'] {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .mobile-foot {
+    margin-top: auto;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 760px) {
+    .nav-desktop {
+      display: none;
+    }
+    .menu-btn {
+      display: flex;
+    }
+  }
+</style>

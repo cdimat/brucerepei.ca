@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import PageIntro from '../components/PageIntro.astro';
+---
+
+<Base title="Page not found" noindex>
+  <PageIntro eyebrow="404" title="This canvas is blank">
+    <p>The page you were looking for has moved or doesn't exist.</p>
+  </PageIntro>
+  <div class="wrap actions">
+    <a class="btn" href="/work/">View the work</a>
+    <a class="btn btn--ghost" href="/">Home</a>
+  </div>
+</Base>
+
+<style>
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-bottom: 4rem;
+  }
+</style>

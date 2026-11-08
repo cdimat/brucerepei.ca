@@ -1,0 +1,60 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import CollectionNav from '../../components/CollectionNav.astro';
+import WorkGrid from '../../components/WorkGrid.astro';
+import { collections, type Collection } from '../../lib/works';
+import { abs, breadcrumbs, graph, PERSON_ID } from '../../lib/seo';
+
+export const getStaticPaths = (() =>
+  collections.map((collection) => ({
+    params: { slug: collection.slug },
+    props: { collection },
+  }))) satisfies GetStaticPaths;
+
+const { collection } = Astro.props as { collection: Collection };
+const path = `/collections/${collection.slug}/`;
+const jsonLd = graph(
+  {
+    '@type': 'CollectionPage',
+    name: `${collection.name}: paintings by Bruce Repei`,
+    description: collection.description,
+    url: abs(path),
+    about: { '@id': PERSON_ID },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: collection.works.length,
+      itemListElement: collection.works.map((w, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: w.title,
+        url: abs(`/work/${w.slug}/`),
+      })),
+    },
+  },
+  breadcrumbs([
+    { name: 'Collections', path: '/collections/' },
+    { name: collection.name, path },
+  ]),
+);
+---
+
+<Base
+  title={`${collection.name} | Paintings`}
+  description={`${collection.description} Original paintings by Canadian artist Bruce Repei.`}
+  image={collection.cover.image}
+  imageAlt={`${collection.cover.title} by Bruce Repei`}
+  jsonLd={jsonLd}
+>
+  <PageIntro
+    eyebrow={`Collection · ${collection.works.length} ${collection.works.length === 1 ? 'work' : 'works'}`}
+    title={collection.name}
+  >
+    <p>{collection.description}</p>
+  </PageIntro>
+  <div class="wrap">
+    <CollectionNav current={collection.slug} />
+    <WorkGrid works={collection.works} eager={6} />
+  </div>
+</Base>

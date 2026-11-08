@@ -1,0 +1,83 @@
+---
+import { Picture } from 'astro:assets';
+import type { Collection } from '../lib/works';
+
+interface Props {
+  collections: Collection[];
+}
+const { collections } = Astro.props;
+---
+
+<ul class="cards">
+  {
+    collections.map((c) => {
+      const cover = c.cover;
+      return (
+        <li data-reveal>
+          <a href={`/collections/${c.slug}/`}>
+            <div class="frame">
+              <Picture
+                src={cover.image}
+                alt={`${cover.title}, from the ${c.name} collection by Bruce Repei`}
+                widths={[400, 640, 900]}
+                sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
+                formats={['avif', 'webp']}
+                loading="lazy"
+              />
+            </div>
+            <div class="meta">
+              <h3>{c.name}</h3>
+              <span class="count">
+                {c.works.length} {c.works.length === 1 ? 'work' : 'works'}
+              </span>
+            </div>
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
+    gap: clamp(1.75rem, 3vw, 2.5rem) clamp(1rem, 2vw, 1.75rem);
+  }
+  a {
+    display: block;
+    text-decoration: none;
+  }
+  .frame {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--line);
+    border-radius: var(--radius);
+  }
+  .frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s var(--ease);
+  }
+  a:hover .frame :global(img) {
+    transform: scale(1.04);
+  }
+  .meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 0.9rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.9rem;
+  }
+  .count {
+    font-size: 0.8rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+</style>

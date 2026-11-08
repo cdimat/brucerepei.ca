@@ -1,0 +1,131 @@
+[
+  {
+    "slug": "at-the-edge",
+    "name": "At the Edge",
+    "description": "Works from AT THE EDGE, a series show of large and small canvases exhibited in November 2015.",
+    "cover": "emerald-edge",
+    "works": [
+      "emerald-edge",
+      "the-edge-in-a-dream",
+      "at-the-edge-no-2",
+      "approaching-red",
+      "boomerang",
+      "the-edge-of-august",
+      "view-eternal",
+      "true-love",
+      "crazy-edge",
+      "high-endeavour"
+    ]
+  },
+  {
+    "slug": "niagara-vineyards",
+    "name": "Niagara Vineyards",
+    "description": "A commissioned series of four seasonal views of the vineyards of Beamsville, Ontario, on the benchlands of the Niagara Escarpment.",
+    "cover": "niagara-vineyards-winter",
+    "works": [
+      "niagara-vineyards-winter",
+      "niagara-vineyards-summer",
+      "niagara-vineyards-fall",
+      "niagara-vineyards-spring"
+    ]
+  },
+  {
+    "slug": "seascape-and-marine",
+    "name": "Seascape & Marine",
+    "description": "Coastlines, harbours and working boats, from Moss Landing to Bermuda to the Gulf of Mexico.",
+    "cover": "on-the-gulf",
+    "works": [
+      "fishing-boats-at-moss-landing",
+      "point-lobos-california",
+      "biloxi-shrimp-boats",
+      "ship-island-black-sand",
+      "jobsons-cove-bermuda",
+      "ship-island-yuccas",
+      "cape-ann-massachussetts",
+      "ship-island-palmetto",
+      "bermuda-sand-dunes",
+      "on-the-gulf",
+      "salt-kettle-bermuda"
+    ]
+  },
+  {
+    "slug": "abstract",
+    "name": "Abstract",
+    "description": "Abstract and collage-based compositions in oil and acrylic.",
+    "cover": "landscape",
+    "works": [
+      "landscape",
+      "the-first-light",
+      "walking-scotty",
+      "the-music-box",
+      "bermuda-no-2",
+      "bermuda"
+    ]
+  },
+  {
+    "slug": "watercolors",
+    "name": "Watercolours",
+    "description": "Landscapes and seascapes in watercolour on paper.",
+    "cover": "fishing-boats-at-moss-landing",
+    "works": [
+      "fishing-boats-at-moss-landing",
+      "point-lobos-california",
+      "fly-fishing",
+      "biloxi-shrimp-boats",
+      "ship-island-black-sand",
+      "jobsons-cove-bermuda",
+      "ship-island-yuccas",
+      "new-england-salt-marsh",
+      "bermuda-sand-dunes",
+      "ship-island-palmetto",
+      "salt-kettle-bermuda"
+    ]
+  },
+  {
+    "slug": "ship-island-mississippi",
+    "name": "Ship Island, Mississippi",
+    "description": "Ship Island, a protected National Seashore off the coast of Mississippi, and the waters around Biloxi and Gulfport.",
+    "cover": "ship-island-palmetto",
+    "works": [
+      "biloxi-shrimp-boats",
+      "ship-island-black-sand",
+      "ship-island-yuccas",
+      "ship-island-palmetto",
+      "on-the-gulf"
+    ]
+  },
+  {
+    "slug": "bermuda",
+    "name": "Bermuda",
+    "description": "The coves, dunes and harbours of Bermuda in watercolour and acrylic.",
+    "cover": "jobsons-cove-bermuda",
+    "works": [
+      "jobsons-cove-bermuda",
+      "bermuda-no-2",
+      "salt-kettle-bermuda",
+      "bermuda",
+      "bermuda-sand-dunes"
+    ]
+  },
+  {
+    "slug": "floral-and-garden",
+    "name": "Floral & Garden",
+    "description": "Roses and camellias in watercolour on paper.",
+    "cover": "camellia-pink-parade",
+    "works": [
+      "peace-rose",
+      "camellia-pink-parade",
+      "ingrid-bergman-rose"
+    ]
+  },
+  {
+    "slug": "western",
+    "name": "Western",
+    "description": "The Bow Valley and the Canadian Rockies around Banff.",
+    "cover": "sunshine-banff",
+    "works": [
+      "sunshine-banff",
+      "along-the-bow"
+    ]
+  }
+]
