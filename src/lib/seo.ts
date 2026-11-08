@@ -33,10 +33,9 @@ export const personSchema = {
   ],
   workLocation: {
     '@type': 'Place',
-    name: 'Studio on James Street North',
+    name: 'Studio in Hamilton, Ontario',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'James Street North',
       addressLocality: 'Hamilton',
       addressRegion: 'ON',
       addressCountry: 'CA',

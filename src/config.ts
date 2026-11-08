@@ -7,8 +7,7 @@ export const site = {
   tagline: 'Canadian Painter & Scenic Artist, Hamilton, Ontario',
   description:
     'Canadian painter Bruce Repei works in oil, acrylic and watercolour from his Hamilton, Ontario studio, after thirty years as a head scenic artist for the stage.',
-  location: 'James Street North, Hamilton, Ontario',
-  city: 'Hamilton, Ontario',
+  location: 'Hamilton, Ontario',
 
   // TODO: replace with Bruce's real email address.
   email: '',

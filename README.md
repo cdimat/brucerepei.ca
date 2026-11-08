@@ -53,7 +53,7 @@ DNS can take from a few minutes to a few hours. Once GitHub sees it (repo **Sett
 1. Add the site to [Google Search Console](https://search.google.com/search-console) as a **Domain** property (verify with a TXT record in GoDaddy DNS) and submit `https://brucerepei.ca/sitemap-index.xml`.
 2. Do the same in [Bing Webmaster Tools](https://www.bing.com/webmasters) (it can import from Search Console).
 3. Link to `https://brucerepei.ca` from Bruce's Fine Art America profile, social accounts and any gallery or class listings. Inbound links are the biggest ranking factor a small site controls.
-4. Consider a free [Google Business Profile](https://www.google.com/business/) for the James Street North studio and classes, so he appears in local "Hamilton artist" / "painting classes Hamilton" searches.
+4. Consider a free [Google Business Profile](https://www.google.com/business/) for the Hamilton studio and classes, so he appears in local "Hamilton artist" / "painting classes Hamilton" searches.
 
 ## Adding a painting
 
